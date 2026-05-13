@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -44,7 +47,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
 
 public class HomeGUI extends javax.swing.JFrame {
 
@@ -54,22 +56,28 @@ public class HomeGUI extends javax.swing.JFrame {
     EnvironmentService envServ = new EnvironmentService();
     AlertaService alertaServ = new AlertaService(envServ);
 
-    private volatile boolean running = true;
+    // ✅ t5 como atributo de clase para poder interrumpirlo
+    private Thread t5;
     private volatile boolean runningg = true;
-    
-    
-    /* main */
+    private volatile boolean running  = true;
+    private final ExecutorService alertExecutor = Executors.newCachedThreadPool();
+
     public HomeGUI() {
         initComponents();
+
+        // ✅ Hookear el cierre de ventana aquí para garantizar apagado limpio
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                detenerTodo();
+                dispose();
+            }
+        });
     }
 
     public void lanzarHilos() {
-        /*=====================================================
-        ==================HILOS================================
-        =======================================================*/
-        //---------hilo para ejecutar cargarTabla()
-
-        Thread t5 = new Thread(() -> {
+        t5 = new Thread(() -> {
             while (runningg) {
                 try {
                     SwingUtilities.invokeAndWait(() -> {
@@ -79,37 +87,43 @@ public class HomeGUI extends javax.swing.JFrame {
                     Thread.sleep(30000);
 
                 } catch (InterruptedException e) {
-                    // Manejar la interrupción del hilo
-                    e.printStackTrace();
-                    Thread.currentThread().interrupt(); // Restaurar la bandera de interrupción
+                    Thread.currentThread().interrupt(); // ✅ sale del while limpiamente
+                    break;
                 } catch (InvocationTargetException | RestClientException e) {
-                    // Manejar otras excepciones
                     e.printStackTrace();
                 }
             }
-        });
+            System.out.println("Hilo t5 detenido.");
+        }, "hilo-chequeo-alertas"); // ✅ nombre para debug
 
-        /*=====================================================
-        ==================CORRER HILOS==========================
-        =======================================================*/
-        //t1.start();
-        //t2.start();
-        //t3.start();
-        //t4.start();
-        t5.start(); // correr hilo 5
-    }
-    
-
-
-
-
-
-    public void stopThread1() {
-        running = false; // Establecer la bandera en false para detener la ejecución del hilo
+        t5.setDaemon(true); // ✅ si la JVM cierra, este hilo no la retiene
+        t5.start();
     }
 
-    public void stopThread2() {
-        runningg = false; // Establecer la bandera en false para detener la ejecución del hilo
+    /**
+     * Único método de apagado. Detiene t5 y el executor de alertas limpiamente.
+     */
+    public void detenerTodo() {
+        runningg = false;
+
+        // ✅ Interrumpir t5 por si está en sleep(30000)
+        if (t5 != null && t5.isAlive()) {
+            t5.interrupt();
+        }
+
+        // ✅ No acepta nuevas alertas y espera que las activas terminen (máx 5s)
+        alertExecutor.shutdown();
+        try {
+            if (!alertExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                alertExecutor.shutdownNow(); // fuerza si no terminaron
+                System.out.println("AlertExecutor forzado a cerrar.");
+            }
+        } catch (InterruptedException e) {
+            alertExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("Todos los hilos detenidos correctamente.");
     }
     
     //CARGAMOS TODOS LOS DATOS DEL USUARIO EN ESTE METODO
@@ -140,83 +154,87 @@ public class HomeGUI extends javax.swing.JFrame {
     }
 
     public void cargarTablaAlertas() {
-        EnvironmentService envServ = new EnvironmentService();
-        
         loadRefresh.setVisible(true);
 
-        /*===============================================
-        ======Hacer que la tabla no sea editable=========
-        ===============================================*/
         DefaultTableModel modeloTabla = new DefaultTableModel() {
-
-            @Override//sobreescritura de metodos significa Override
-            public boolean isCellEditable(int row, int colum) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        /*===============================================*/
-        //Poner titulos a las columnas
-        String titulos[] = {"TICKET", "PrecioEjecucion", "side", "Encendido??"};
-        //agregamos los titulos 
+        String[] titulos = {"TICKET", "PrecioEjecucion", "side", "Encendido??"};
         modeloTabla.setColumnIdentifiers(titulos);
-        
-        try {
-            //traer los autos desde la base de datos
-            //Creamos la lista
-            Boolean respuesta = alertaServ.checkStatusServer();
-            
-            if (respuesta == true){
-                apiSucess.setVisible(true);
-                apiFail.setVisible(false);
-            }else{
-                apiSucess.setVisible(false);
-                apiFail.setVisible(true);
-            }
 
+        // Chequeo de estado del servidor
+        try {
+            Boolean respuesta = alertaServ.checkStatusServer();
+            apiSucess.setVisible(respuesta);
+            apiFail.setVisible(!respuesta);
         } catch (Exception e) {
             System.out.println("Error en la respuesta del servidor");
         }
 
+        // Carga de alertas
         try {
-            //traer los autos desde la base de datos
-            //Creamos la lista
             List<Ticket> listaTickets = alertaServ.listaAlertas();
 
-            //Setear los datos en la tabla para eso preguntar q no este vacia
             if (listaTickets != null) {
-                for (Ticket tic : listaTickets) {//Esto se leeria: por cada auto de mi lista de automoviles...
-                    //...voy a setear un auto distinto en cada recorrido
-                    Object[] objeto = {tic.getNombre(), tic.getPrecioEstablecido(), tic.getDireccion(),
-                        tic.getEncendido()};
-
-                    /*==============================================*/
- /*============EMITIR ALERTA DESKTOP============*/
- /*==========================================*/
-                    if (tic.getEmitirAlerta() == 1) {
-                        playSound("alert.wav");
-                        String condicional = "Encima";
-                        if (condicional.equals(tic.getDireccion())) {
-                            showAlert("🔔 ALERTA PARA | " + tic.getNombre().toUpperCase() + " | EL PRECIO SUPERO LOS: 🠕 " + tic.getPrecioEstablecido(),
-                                    "🔔 ALERTA " + tic.getNombre().toUpperCase(), "alert-icon.jpg");
-                        } else {
-                            showAlert("🔔 ALERTA PARA | " + tic.getNombre().toUpperCase() + " | EL PRECIO CAYO DE LOS: 🠗 " + tic.getPrecioEstablecido(),
-                                    "🔔 ALERTA " + tic.getNombre().toUpperCase(), "alert-icon.jpg");
-                        }
-                    }
-                    /*==========================================*/
-                    //Meter adentro de la tabla
+                for (Ticket tic : listaTickets) {
+                    Object[] objeto = {
+                        tic.getNombre(),
+                        tic.getPrecioEstablecido(),
+                        tic.getDireccion(),
+                        tic.getEncendido()
+                    };
                     modeloTabla.addRow(objeto);
+
+                    // 🔔 Si hay alerta: lanzar en hilo separado, NO bloquea el chequeo
+                    if (tic.getEmitirAlerta() == 1) {
+                        lanzarAlertaEnHiloSeparado(tic);
+                    }
                 }
             }
             TablaAlertas.setModel(modeloTabla);
 
         } catch (Exception e) {
             System.out.println("Error al cargar Datos de Tabla");
-        }
-        finally{
+        } finally {
             loadRefresh.setVisible(false);
         }
+    }
+
+    /**
+     * Lanza la notificación en un hilo independiente. El popup NO bloquea el
+     * ciclo de chequeo de t5.
+     */
+    private void lanzarAlertaEnHiloSeparado(Ticket tic) {
+        // Capturar datos antes de entrar al hilo (thread-safety)
+        final String nombre = tic.getNombre();
+        final String precio = String.valueOf(tic.getPrecioEstablecido());
+        final String direccion = tic.getDireccion();
+
+        alertExecutor.submit(() -> {
+            // Sonido: no requiere EDT
+            playSound("alert.wav");
+
+            // Armar mensaje según dirección
+            boolean esEncima = "Encima".equals(direccion);
+            String mensaje = esEncima
+                    ? "🔔 ALERTA PARA | " + nombre.toUpperCase() + " | EL PRECIO SUPERO LOS: 🠕 " + precio
+                    : "🔔 ALERTA PARA | " + nombre.toUpperCase() + " | EL PRECIO CAYO DE LOS: 🠗 " + precio;
+            String titulo = "🔔 ALERTA " + nombre.toUpperCase();
+
+            // Mostrar popup en EDT desde este hilo separado
+            // invokeAndWait bloquea ESTE hilo, no el hilo t5
+            try {
+                SwingUtilities.invokeAndWait(() -> showAlert(mensaje, titulo, "alert-icon.jpg"));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void playSound(String fileName) {
@@ -270,7 +288,7 @@ public class HomeGUI extends javax.swing.JFrame {
             return null;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -516,7 +534,7 @@ public class HomeGUI extends javax.swing.JFrame {
         try {
             alertaServvv.deleteTicket();
             showAlert("Alertas Completadas Eliminadas!!",
-                "Alertas Eliminadas", "clean.png");
+                    "Alertas Eliminadas", "clean.png");
             cargarTablaAlertas();
         } catch (NumberFormatException e) {
             System.out.println("Formato invalido Introducido!" + e);
@@ -524,16 +542,16 @@ public class HomeGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarCompletadasActionPerformed
 
     private void txtPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioActionPerformed
-    SwingUtilities.invokeLater(() -> {
-        txtPrecio.requestFocusInWindow();
-        txtPrecio.selectAll(); // opcional: selecciona el texto
-    });
+        SwingUtilities.invokeLater(() -> {
+            txtPrecio.requestFocusInWindow();
+            txtPrecio.selectAll(); // opcional: selecciona el texto
+        });
     }//GEN-LAST:event_txtPrecioActionPerformed
 
     private void txtPrecioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtPrecioMouseClicked
         SwingUtilities.invokeLater(() -> {
-        txtPrecio.requestFocusInWindow();
-        txtPrecio.selectAll(); // opcional: selecciona el texto
+            txtPrecio.requestFocusInWindow();
+            txtPrecio.selectAll(); // opcional: selecciona el texto
         });
         String text = "";
         txtPrecio.setText(text);
@@ -563,12 +581,12 @@ public class HomeGUI extends javax.swing.JFrame {
                 alertaServv.saveTicket(tic);
 
                 showAlert("Alerta Agregada con Exito!",
-                    "Alerta Creada", "sucess.png");
+                        "Alerta Creada", "sucess.png");
 
                 cargarTablaAlertas();
             } catch (NumberFormatException e) {
                 showAlert("Formato invalido Introducido!",
-                    "ERROR!!", "error.png");
+                        "ERROR!!", "error.png");
                 System.out.println("Formato invalido Introducido!" + e);
             }
         }
@@ -576,10 +594,10 @@ public class HomeGUI extends javax.swing.JFrame {
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         SwingUtilities.invokeLater(() -> {
-                txtPrecio.select(0, 0);              // quitar selección
-                AlertsPane.requestFocusInWindow();  // quitar foco del JTextField
-                txtPrecio.setText(""); 
-        });               
+            txtPrecio.select(0, 0);              // quitar selección
+            AlertsPane.requestFocusInWindow();  // quitar foco del JTextField
+            txtPrecio.setText("");
+        });
     }//GEN-LAST:event_btnClearActionPerformed
 
     private void txtPrecioFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPrecioFocusLost
@@ -591,7 +609,7 @@ public class HomeGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPrecioFocusGained
 
     private void AlertsPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AlertsPaneMouseClicked
-        
+
     }//GEN-LAST:event_AlertsPaneMouseClicked
 
     private void btnReload1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReload1ActionPerformed
@@ -642,9 +660,5 @@ public class HomeGUI extends javax.swing.JFrame {
         public AlertUtil() {
         }
     }
-
-    
-
-    
 
 }
