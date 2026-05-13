@@ -300,12 +300,23 @@
                       <Font name="sansserif" size="14" style="0"/>
                     </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="5">
+                      <StringArray count="16">
                         <StringItem index="0" value="btc"/>
                         <StringItem index="1" value="eth"/>
-                        <StringItem index="2" value="matic"/>
+                        <StringItem index="2" value="pol"/>
                         <StringItem index="3" value="link"/>
                         <StringItem index="4" value="trx"/>
+                        <StringItem index="5" value="xrp"/>
+                        <StringItem index="6" value="arb"/>
+                        <StringItem index="7" value="ltc"/>
+                        <StringItem index="8" value="bnb"/>
+                        <StringItem index="9" value="ton"/>
+                        <StringItem index="10" value="ada"/>
+                        <StringItem index="11" value="avax"/>
+                        <StringItem index="12" value="sol"/>
+                        <StringItem index="13" value="atom"/>
+                        <StringItem index="14" value="etc"/>
+                        <StringItem index="15" value="xmr"/>
                       </StringArray>
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>

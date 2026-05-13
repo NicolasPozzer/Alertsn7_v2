@@ -428,7 +428,7 @@ public class HomeGUI extends javax.swing.JFrame {
         jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 40, -1, -1));
 
         TicketBox.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        TicketBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "btc", "eth", "matic", "link", "trx" }));
+        TicketBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "btc", "eth", "pol", "link", "trx", "xrp", "arb", "ltc", "bnb", "ton", "ada", "avax", "sol", "atom", "etc", "xmr" }));
         TicketBox.setFocusable(false);
         jPanel6.add(TicketBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
 
