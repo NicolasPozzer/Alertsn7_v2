@@ -300,7 +300,7 @@
                       <Font name="sansserif" size="14" style="0"/>
                     </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="16">
+                      <StringArray count="17">
                         <StringItem index="0" value="btc"/>
                         <StringItem index="1" value="eth"/>
                         <StringItem index="2" value="pol"/>
@@ -317,6 +317,7 @@
                         <StringItem index="13" value="atom"/>
                         <StringItem index="14" value="etc"/>
                         <StringItem index="15" value="xmr"/>
+                        <StringItem index="16" value="doge"/>
                       </StringArray>
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>
