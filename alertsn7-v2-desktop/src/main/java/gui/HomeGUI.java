@@ -284,7 +284,6 @@ public class HomeGUI extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         apiSucess = new javax.swing.JLabel();
         apiFail = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         AlertsPane = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         DireccionBox = new javax.swing.JComboBox<>();
@@ -300,6 +299,7 @@ public class HomeGUI extends javax.swing.JFrame {
         loadRefresh = new javax.swing.JLabel();
         btnReload1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -348,16 +348,11 @@ public class HomeGUI extends javax.swing.JFrame {
 
         apiSucess.setForeground(new java.awt.Color(242, 242, 242));
         apiSucess.setIcon(new javax.swing.ImageIcon(getClass().getResource("/api-sucess.png"))); // NOI18N
-        jPanel1.add(apiSucess, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 890, 60, 20));
+        jPanel1.add(apiSucess, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 880, 40, 40));
 
         apiFail.setForeground(new java.awt.Color(242, 242, 242));
         apiFail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/api-fail.png"))); // NOI18N
-        jPanel1.add(apiFail, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 890, -1, 20));
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(242, 242, 242));
-        jLabel2.setText("Api:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 890, 40, -1));
+        jPanel1.add(apiFail, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 890, -1, 20));
 
         AlertsPane.setBackground(new java.awt.Color(51, 51, 51));
         AlertsPane.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -496,6 +491,11 @@ public class HomeGUI extends javax.swing.JFrame {
         AlertsPane.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 200, 90));
 
         jPanel1.add(AlertsPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 1038, 707));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(242, 242, 242));
+        jLabel2.setText("ApiCheck:");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 890, 70, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1090, 920));
 
