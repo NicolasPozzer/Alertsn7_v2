@@ -1,0 +1,13 @@
+services:
+        trading-backend:
+                build: .
+                container_name: trading_room_backend
+                ports:
+                        - "8077:8077"
+                volumes:
+                        # Persiste la base de datos SQLite fuera del contenedor
+                        - sqlite_data:/app/data
+                restart: unless-stopped
+
+volumes:
+        sqlite_data:

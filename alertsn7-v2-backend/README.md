@@ -3,24 +3,27 @@
 #### Config Backend
 Add "aplication.properties"
 ```bash
-# --- Config Database ---
+# App
 spring.application.name=trading_room_backend
+
+# SQLite
+#db Prod Docker
+#spring.datasource.url=jdbc:sqlite:/app/data/alertsn7.db
+
+# Para desarrollo local (ruta relativa al directorio del proyecto)
+spring.datasource.url=jdbc:sqlite:alertsn7.db
+
+spring.datasource.driver-class-name=org.sqlite.JDBC
+
+# Hibernate / JPA
+spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
 spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:mysql://127.0.0.1:3306/db_name
-spring.datasource.username=root
-spring.datasource.password=
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
-
-# --- Config Bot Telegram - para avisos ---
-# Token bot Telegram
+# Server
+server.port=8077
 telegram.bot.token=
-# Id del chat donde se enviaran los avisos
 telegram_chat_client_id=
 
-# Configs del servidor
-server.port=8077
+spring.datasource.hikari.maximum-pool-size=1
 spring.datasource.hikari.connection-timeout=20000
-spring.datasource.hikari.idle-timeout=30000
-spring.datasource.hikari.max-lifetime=3600000
 ```

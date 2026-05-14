@@ -1,0 +1,27 @@
+Boceto.excalidraw
+HELP.md
+
+# Maven
+target/
+*.jar
+
+# Base de datos SQLite local
+*.db
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Variables de entorno
+.env
+.env.*

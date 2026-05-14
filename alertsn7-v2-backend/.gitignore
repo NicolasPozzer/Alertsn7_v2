@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 src/main/resources/aplication
 src/main/resources/application.properties
+alertsn7.db
 
 ### STS ###
 .apt_generated
