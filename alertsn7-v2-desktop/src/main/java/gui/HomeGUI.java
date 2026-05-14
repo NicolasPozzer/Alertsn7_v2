@@ -353,7 +353,7 @@ public class HomeGUI extends javax.swing.JFrame {
         jLabel8.setBackground(new java.awt.Color(51, 51, 51));
         jLabel8.setFont(new java.awt.Font("Bahnschrift", 0, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(251, 251, 251));
-        jLabel8.setText("TradingRoom");
+        jLabel8.setText("AlertsN7 v2");
         NavigationPane.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 30, -1, -1));
 
         calculatorButton.setBackground(new java.awt.Color(58, 58, 58));

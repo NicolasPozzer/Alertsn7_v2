@@ -25,7 +25,7 @@ public class Alertsn7_v2 {
         HomeGUI princi = new HomeGUI();
         princi.setVisible(true);
         princi.setLocationRelativeTo(null);
-        princi.setTitle("TradingRoom By Niko7even");
+        princi.setTitle("AlertsN7.v2 By Niko7even");
         princi.cargarDatosDeInicio();
         princi.lanzarHilos();
     });
