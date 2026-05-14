@@ -1,7 +1,7 @@
 services:
         trading-backend:
                 build: .
-                container_name: trading_room_backend
+                container_name: alertsn7_v2_backend
                 ports:
                         - "8077:8077"
                 volumes:
