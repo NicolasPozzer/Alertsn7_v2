@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -143,6 +144,19 @@ public class HomeGUI extends javax.swing.JFrame {
         txtPrecio.setVisible(false);
         txtPrecio.setVisible(true);
         loadRefresh.setVisible(false);
+        
+        Properties props = new Properties();
+        try (InputStream input = getClass().getResourceAsStream("/config.properties")) {
+            if (input == null) {
+                System.out.println("config.properties no encontrado, usando URL por defecto");
+                iptxt.setText("");
+            }
+            props.load(input);
+            iptxt.setText(props.getProperty("backend.url", "null"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            iptxt.setText("");
+        }
     }
 
 
@@ -317,7 +331,9 @@ public class HomeGUI extends javax.swing.JFrame {
         loadRefresh = new javax.swing.JLabel();
         btnReload1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        iptxt = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -510,10 +526,20 @@ public class HomeGUI extends javax.swing.JFrame {
 
         jPanel1.add(AlertsPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 1038, 707));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(242, 242, 242));
-        jLabel2.setText("ApiCheck:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 890, 70, -1));
+        iptxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        iptxt.setForeground(new java.awt.Color(242, 242, 242));
+        iptxt.setText("null");
+        jPanel1.add(iptxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 890, 710, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(242, 242, 242));
+        jLabel5.setText("ApiCheck:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 890, 70, -1));
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(242, 242, 242));
+        jLabel7.setText("IP BackendSet:");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 890, 110, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1090, 920));
 
@@ -580,8 +606,9 @@ public class HomeGUI extends javax.swing.JFrame {
                 tic.setEmitirAlerta(0);
                 alertaServv.saveTicket(tic);
 
-                showAlert("Alerta Agregada con Exito!",
-                        "Alerta Creada", "sucess.png");
+                // ALERTA DE CREACION DE ALERTA DE PRECIO CON EXITO
+                //showAlert("Alerta Agregada con Exito!",
+                //        "Alerta Creada", "sucess.png");
 
                 cargarTablaAlertas();
             } catch (NumberFormatException e) {
@@ -636,10 +663,12 @@ public class HomeGUI extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiarCompletadas;
     private javax.swing.JButton btnReload1;
     private javax.swing.JButton calculatorButton;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel iptxt;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPaneWidgetTV;
     private javax.swing.JPanel jPanel1;
