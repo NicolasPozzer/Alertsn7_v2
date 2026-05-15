@@ -60,7 +60,7 @@ public class HomeGUI extends javax.swing.JFrame {
     // ✅ t5 como atributo de clase para poder interrumpirlo
     private Thread t5;
     private volatile boolean runningg = true;
-    private volatile boolean running  = true;
+    private volatile boolean running = true;
     private final ExecutorService alertExecutor = Executors.newCachedThreadPool();
 
     public HomeGUI() {
@@ -72,7 +72,7 @@ public class HomeGUI extends javax.swing.JFrame {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
                 detenerTodo();
-                dispose();
+                cerrarAplicacion();
             }
         });
     }
@@ -101,6 +101,19 @@ public class HomeGUI extends javax.swing.JFrame {
         t5.start();
     }
 
+    private void cerrarAplicacion() {
+        System.out.println("Cerrando aplicación...");
+
+        // 1️⃣ detener hilos
+        detenerTodo();
+
+        // 2️⃣ cerrar ventanas Swing
+        dispose();
+
+        // 3️⃣ FORZAR cierre de JVM (clave)
+        System.exit(0);
+    }
+
     /**
      * Único método de apagado. Detiene t5 y el executor de alertas limpiamente.
      */
@@ -126,7 +139,7 @@ public class HomeGUI extends javax.swing.JFrame {
 
         System.out.println("Todos los hilos detenidos correctamente.");
     }
-    
+
     //CARGAMOS TODOS LOS DATOS DEL USUARIO EN ESTE METODO
     public void cargarDatosDeInicio() {
         CargarDisenioGUI();
@@ -144,7 +157,7 @@ public class HomeGUI extends javax.swing.JFrame {
         txtPrecio.setVisible(false);
         txtPrecio.setVisible(true);
         loadRefresh.setVisible(false);
-        
+
         Properties props = new Properties();
         try (InputStream input = getClass().getResourceAsStream("/config.properties")) {
             if (input == null) {
@@ -609,7 +622,6 @@ public class HomeGUI extends javax.swing.JFrame {
                 // ALERTA DE CREACION DE ALERTA DE PRECIO CON EXITO
                 //showAlert("Alerta Agregada con Exito!",
                 //        "Alerta Creada", "sucess.png");
-
                 cargarTablaAlertas();
             } catch (NumberFormatException e) {
                 showAlert("Formato invalido Introducido!",

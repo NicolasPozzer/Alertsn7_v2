@@ -8,6 +8,10 @@ public interface ITicketService {
 
     public List<Ticket> getTickets();
 
+    public List<Ticket> getTicketsEncendidos();
+
+    public List<Ticket> getTicketsConAlertaActiva();
+
     public void saveTicket(Ticket tic);
 
     public void deleteTicket();

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class ApiCoinService implements IApiCoinService{
         } catch (Exception e) {
             // Manejar errores, lanzar excepciones o devolver una lista vacía según tus necesidades.
             System.out.println("Error al consultar API!");
-            return null;
+            return Collections.emptyList();
         }
     }
 }

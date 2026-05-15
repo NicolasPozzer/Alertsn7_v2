@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter @ToString
 @Entity
 public class Ticket {
@@ -21,11 +23,12 @@ public class Ticket {
     private Boolean encendido;  //  False = Apagado | True = Encendido
     private String color;
     private int emitirAlerta;
+    private LocalDateTime emitirAlertaHasta;
 
     public Ticket() {
     }
 
-    public Ticket(Long id, String nombre, Double precioEstablecido, String direccion, Boolean encendido, String color, int emitirAlerta) {
+    public Ticket(Long id, String nombre, Double precioEstablecido, String direccion, Boolean encendido, String color, int emitirAlerta, LocalDateTime emitirAlertaHasta) {
         this.id = id;
         this.nombre = nombre;
         this.precioEstablecido = precioEstablecido;
@@ -33,5 +36,6 @@ public class Ticket {
         this.encendido = encendido;
         this.color = color;
         this.emitirAlerta = emitirAlerta;
+        this.emitirAlertaHasta = emitirAlertaHasta;
     }
 }
