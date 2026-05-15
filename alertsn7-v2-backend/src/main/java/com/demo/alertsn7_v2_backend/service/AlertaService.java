@@ -34,10 +34,13 @@ public class AlertaService implements IAlertaService{
         System.out.println("\n\t |Comprobacion Automatica de Alertas...| \n");
 
         try {
-            /*LLamar una sola vez a la lista de la api*/
+            // Llamar una sola vez a la lista de la api
             List<ApiCoin> listaCotizacionesTiempoReal = apiServ.listadoApiCoin();
             List<Ticket> listaTickets = ticketServ.getTickets();
-            if (!listaTickets.isEmpty() || !listaCotizacionesTiempoReal.isEmpty()){
+
+            if (listaTickets != null && listaCotizacionesTiempoReal != null
+                    && !listaTickets.isEmpty() && !listaCotizacionesTiempoReal.isEmpty()) {
+
                 for (Ticket ticket : listaTickets) {
                     for (ApiCoin coin : listaCotizacionesTiempoReal) {
 
@@ -96,7 +99,7 @@ public class AlertaService implements IAlertaService{
                 System.out.println("Lista vacia nada para Comprobar!");
             }
         }catch (Exception e){
-            System.out.println("Error al intentar emitir alerta!");
+            System.out.println("Error al intentar comprobar alertas!");
         }
     }
 
