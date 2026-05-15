@@ -4,7 +4,7 @@
 Add "aplication.properties"
 ```bash
 # App
-spring.application.name=trading_room_backend
+spring.application.name=alertsn7_v2_backend
 
 # SQLite
 #db Prod Docker
