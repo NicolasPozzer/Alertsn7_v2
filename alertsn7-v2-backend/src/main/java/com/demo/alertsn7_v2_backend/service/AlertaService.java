@@ -95,17 +95,20 @@ public class AlertaService implements IAlertaService{
     @Scheduled(fixedRate = 21000) // cada 21 segundos
     @Transactional
     public void limpiarAlertasVencidas() {
+        try {
+            List<Ticket> tickets = repoTicket.findTicketsConAlertaActiva();
 
-        List<Ticket> tickets = repoTicket.findTicketsConAlertaActiva();
+            for (Ticket ticket : tickets) {
+                if (ticket.getEmitirAlerta() == 1 &&
+                        ticket.getEmitirAlertaHasta() != null &&
+                        LocalDateTime.now().isAfter(ticket.getEmitirAlertaHasta())) {
 
-        for (Ticket ticket : tickets) {
-            if (ticket.getEmitirAlerta() == 1 &&
-                    ticket.getEmitirAlertaHasta() != null &&
-                    LocalDateTime.now().isAfter(ticket.getEmitirAlertaHasta())) {
-
-                ticket.setEmitirAlerta(0);
-                repoTicket.save(ticket);
+                    ticket.setEmitirAlerta(0);
+                    repoTicket.save(ticket);
+                }
             }
+        } catch (Exception e) {
+            System.out.println(e + "\nError en scheduler de la funcion limpiarAlertasVencidas()");
         }
     }
 
